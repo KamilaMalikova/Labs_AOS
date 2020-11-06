@@ -10,6 +10,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 #include <fcntl.h>
 
 int main(int argc, char * argv[], char * envp[]){
@@ -19,7 +20,7 @@ int main(int argc, char * argv[], char * envp[]){
     printf("file=%d\n", file);
     if(file>=0){
         scanf("%s", text);
-        printf(text);
+        printf("%s\n", text);
         w = write(file, &text, 20);
         if(w < 0){
             printf("errno=%d", errno);

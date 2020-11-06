@@ -9,30 +9,33 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 int main(int argc, char * argv[], char * envp[]){
     int fd1, fd2, l;
-    char file1;
-    char file2;
-    char buff[1024];
+    char buff[4096];
     if(argc != 3){
-        printf("Usage: %s file filecopy\n", argv[0]);
+        printf("Usage: %s file1 file2\n", argv[0]);
         exit(1);
+
+    }else{
+        fd1 = open(argv[1], O_RDONLY);
+        if(fd1 == -1){
+            perror(argv[1]);
+            exit(1);
+        }
+        fd2 = creat(argv[2], 0777);
+        if(fd1 == -1){
+            perror(argv[2]);
+            exit(1);
+        }
     }
-    fd1 = open(argv[1], O_RDONLY);
-    if(fd1 == -1){
-        perror(fd1);
-        exit(1);
-    }
-    fd2 = creat(argv[2], 0777);
-    if(fd2 == -1){
-        perror(fd1);
-        exit(1);
-    }
-    fd1 = dup2(fd1, 0);
-    fd2 = dup(fd2, 1);
-    while ((l=read(fd1, buff, sizeof(buff)))>0)
-        write(fd2, buff, l);
+
+    dup2(fd1, 0);
+    dup2(fd2, 1);
+    while ((l=read(0, buff, 4096))>0)
+        write(1, buff, l);
+
 
     close(fd1);
     close(fd2);

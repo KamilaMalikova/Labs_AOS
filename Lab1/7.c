@@ -9,9 +9,13 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <time.h>
+#include <sys/sysmacros.h>
+#include <pwd.h>
 
 int main(int argc, char * argv[], char * envp[]){
     struct stat st;
+    struct passwd *pswd;
     int fd, ret;
     if(argc != 2){
         printf("Usage: %s filename\n", argv[0]);
@@ -21,13 +25,40 @@ int main(int argc, char * argv[], char * envp[]){
         perror(argv[1]);
         exit(1);
     }
-    printf("Device=%lld Inode=%d Mode=0%o\n", st.st_dev, st.st_ino, st.st_mode);
-    printf("Links=%d UID=%d GID=%d\n", st.st_nlink, st.st_uid, st.st_gid);
-    printf("TypeDevice=0x%llx | %lld Size=%d\n", st.st_rdev, st.st_rdev, st.st_size);
-    printf("Size of block=%d Count of blocks=%d\n", st.st_blksize, st.st_blocks);
-    printf("atime=%s", ctime(&st.st_atime));
-    printf("mtime=%s", ctime(&st.st_mtime));
-    printf("ctime=%s", ctime(&st.st_ctime));
+    //File type
+    if(S_ISREG(st.st_mode)) printf("%s is a regular file\n", argv[1]); // is it a regular file?
+    else if (S_ISDIR(st.st_mode)) printf("%s is a directory\n", argv[1]);
+    else if(S_ISCHR(st.st_mode)) printf("%s is a character device\n", argv[1]);
+    else if(S_ISBLK(st.st_mode)) printf("%s is a block device\n", argv[1]);
+    else if(S_ISFIFO(st.st_mode)) printf("%s is a FIFO", argv[1]);
+    printf("File permissions: ");
+    printf( (st.st_mode & S_IRUSR) ? "r" : "-");
+    printf( (st.st_mode & S_IWUSR) ? "w" : "-");
+    printf( (st.st_mode & S_IXUSR) ? "x" : "-");
+    printf( (st.st_mode & S_IRGRP) ? "r" : "-");
+    printf( (st.st_mode & S_IWGRP) ? "w" : "-");
+    printf( (st.st_mode & S_IXGRP) ? "x" : "-");
+    printf( (st.st_mode & S_IROTH) ? "r" : "-");
+    printf( (st.st_mode & S_IWOTH) ? "w" : "-");
+    printf( (st.st_mode & S_IXOTH) ? "x" : "-");
+    printf("\n");
+
+    printf("Inode: %lud\n", st.st_ino);
+    printf("Major: %ud\n", major(st.st_rdev));
+    printf("Minor: %ud\n", minor(st.st_rdev));
+
+    pswd = getpwuid(st.st_uid);
+
+    printf("UID: %d - %s, ", st.st_uid, pswd->pw_name);
+    printf("GID: %d - %s\n", st.st_gid, getpwuid(st.st_gid)->pw_name);
+
+    printf("Device: %lud \n", st.st_dev);
+    printf("Links: %lud \n", st.st_nlink);
+    printf("Size=%ld bytes\n", st.st_size);
+    printf("Size of block: %ld\nBlocks: %ld\n", st.st_blksize, st.st_blocks);
+    printf("Last access: %s", ctime(&st.st_atime));
+    printf("Last modification: %s", ctime(&st.st_mtime));
+    printf("Last status change: %s", ctime(&st.st_ctime));
     exit(0);
 }
 
