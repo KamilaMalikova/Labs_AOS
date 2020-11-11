@@ -12,7 +12,9 @@ extern char ** environ;
 
 int main(int argc, char * argv[], char * envp[]){
     int i;
-    putenv("AAA=I am a new environment paramentr");
+    if(putenv("AAA=I am a new environment param") != 0){
+        perror("ENV");
+    }
     for (i=0; envp[i]; i++)
         printf("%s\n", envp[i]);
     printf("\nAfter add with environ\n");
