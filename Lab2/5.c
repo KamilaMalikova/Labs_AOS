@@ -13,12 +13,13 @@ int main(int argc, char * argv[], char * envp[]){
     int status, c_pid;
     if ((c_pid = fork()) == 0){
         printf("I am son. Pid=%d, ppid=%d, pgid=%d\n", getpid(), getppid(), getpgrp());
-        sleep(2);
+        sleep(3);
         printf("Look at my pid. Pid=%d, ppid=%d, pgid=%d\n", getpid(), getppid(), getpgrp());
         system("ps -l");
         exit(0);
     }else{
         printf("I am father. Pid=%d, ppid=%d, pgid=%d\n", getpid(), getppid(), getpgrp());
+        sleep(1);
         printf("Bye. My pid: %d\n", getpid());
         exit(0);
     }

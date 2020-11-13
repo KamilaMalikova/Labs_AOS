@@ -52,18 +52,20 @@ int main(int argc, char * argv[], char * envp[]){
         char buff[1];
         char buff2[4024];
         while ((l=read(fd, buff, 1))>0)
-            write(fd_p, buff, l);
+            write(fd_c, buff, l);
         close(fd_c);
         fd_c = open("file_8_2", O_RDONLY);
         if(fd_c == -1){
             perror("file_8_2");
             exit(1);
         }
+
         while((l = read(fd_c, buff2, 4024)) > 0){
             write(1, buff2, l);
         }
         printf("\n");
         close(fd_c);
     }
+    close(fd);
     exit(0);
 }

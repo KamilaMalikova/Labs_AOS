@@ -15,12 +15,12 @@ int main(int argc, char * argv[], char * envp[]){
     int status, c_pid;
     if ((c_pid = fork()) == 0){
         printf("I am son. Pid=%d, ppid=%d, pgid=%d\n", getpid(), getppid(), getpgrp());
-        exit(0);
+        exit(3);
     }else{
         printf("I am father. Pid=%d, ppid=%d, pgid=%d\n", getpid(), getppid(), getpgrp());
         printf("Wait for my son with pid %d....\n", c_pid);
         if(wait(&status) == c_pid)
-            printf("Son's exit status: %d\n", status);
+            printf("Son's exit status: %d\n", WEXITSTATUS(status));
         exit(0);
     }
 }
