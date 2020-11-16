@@ -8,9 +8,21 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <signal.h>
 #include <sys/wait.h>
 #include <fcntl.h>
+#include <stdbool.h>
+
+void disp(int sig){
+    signal(sig, SIG_DFL);
+    printf("\nDisposition is changed\n");
+}
 
 int main(int argc, char * argv[], char * envp[]){
-
+    bool a = true;
+    signal(SIGINT, disp);
+    while(a){
+        printf("Wait .....\n");
+        sleep(1);
+    }
 }
