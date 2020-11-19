@@ -13,7 +13,6 @@
 #include <stdbool.h>
 
 void disp(int sig){
-    signal(sig, SIG_DFL);
     printf("\nDisposition is changed\n");
 }
 

@@ -19,7 +19,6 @@ int main(int argc, char * argv[], char * envp[]){
         pause();
         exit(3);
     }else{
-        //kill(c_pid, SIGTERM);
         wait(&stat);
         printf("Return value: %d\n", stat);
         printf("Status: %d\n", WEXITSTATUS(stat));

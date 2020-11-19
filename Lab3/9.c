@@ -14,19 +14,15 @@
 void disp(int sig){
     signal(sig, SIG_DFL);
     printf("\nDisposition is changed\n");
-    sleep(1);
 }
 
 int main(int argc, char * argv[], char * envp[]){
     int stat;
     int c_pid;
-    //signal(SIGALRM, disp);
     if((c_pid = fork()) == 0){
-        alarm(1);
-         for(int i = 0; i< 10000000; i++){
-            for(int j = 0; j < 150; j++){
-                continue;
-            }
+        alarm(4);
+         for(int i = 0; i< 10; i++){
+            sleep(1);
             printf("Iteration: %d\n", i);
         }
         exit(3);
