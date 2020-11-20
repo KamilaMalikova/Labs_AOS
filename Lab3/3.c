@@ -18,10 +18,12 @@ void disp(int sig){
 
 int main(int argc, char * argv[], char * envp[]){
 
-    sa.sa_handler = SIG_IGN;
+/*    sa.sa_handler = SIG_IGN;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = SA_NOCLDWAIT;
     sigaction(SIGCHLD, &sa, NULL);
+  */
+    signal(SIGCHLD, SIG_IGN);
     for(int i = 0; i < 6; i++){
         if(fork() == 0){
 
@@ -33,7 +35,7 @@ int main(int argc, char * argv[], char * envp[]){
     }
 
     printf("Parent: %d\n", getpid());
-    sleep(3);
+    //sleep(3);
     system("ps -l");
     exit(0);
 

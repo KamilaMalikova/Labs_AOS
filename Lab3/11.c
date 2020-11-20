@@ -15,49 +15,64 @@
 struct sigaction sa;
 
 void disp(int sig){
-    printf("\nSignal handler\n");
-    sleep(4);
+    printf("\nSignal handler\n\n");
 }
 
 int main(int argc, char * argv[], char * envp[]){
     int stat;
-    int c_pid;
+    sigset_t mask;
+
+    sigemptyset(&mask);
+    sigaddset(&mask, SIGUSR2);
+    sigprocmask(SIG_BLOCK, &mask, NULL);
+
+    sigset_t mask2;
+    sigemptyset(&mask2);
+    sigaddset(&mask2, SIGUSR1);
+
+    raise(SIGUSR2);
+
     memset(&sa, 0, sizeof(sa));
     sa.sa_handler = disp;
-    sigemptyset(&sa.sa_mask);
-    sigaddset(&sa.sa_mask, SIGUSR1);
-    sigaddset(&sa.sa_mask, SIGTSTP);
-    //sa.sa_flags = SA_RESETHAND;
+    sigaction(SIGUSR2, &sa, NULL);
 
+    int c_pid;
+    //child
     if((c_pid = fork()) == 0){
-        sigaction(SIGINT, &sa, NULL);
-        for(int i = 0; i< 10000000; i++){
-            for(int j = 0; j < 150; j++){
-                continue;
+        sigsuspend(&mask2);
+        printf("Got signal. My pid is %d\n", getpid());
+        int fd = open("file11", O_RDONLY);
+        int buff_size = 1;
+        char buff[buff_size];
+        int l;
+        while((l = read(fd, buff, buff_size)) > 0){
+            write(1, buff, buff_size);
+        }
+        close(fd);
+        printf("\n");
+        kill(getppid(), SIGUSR2);
+        printf("Signaled to %d\n", getppid());
+        printf("Bye\n");
+        exit(0);
+    }//parent
+    else{
+        int fd = creat("file11", 0777);
+        int l;
+        int buff_size = 1;
+        char buff[buff_size];
+        while((l = read(0, buff, buff_size)) > 0){
+            write(fd, buff, buff_size);
+            if(buff[0] == '\n'){
+                break;
             }
-            printf("Iteration: %d\n", i);
         }
-        exit(3);
-    }else{
-        sleep(2);
-        printf("1");
-        kill(c_pid, SIGINT);
-        sleep(1);
-        printf("2");
-        kill(c_pid, SIGINT);
-        sleep(1);
-        printf("3");
-        kill(c_pid, SIGUSR1);
-        kill(c_pid, SIGTSTP);
+        close(fd);
+        kill(c_pid, SIGUSR2);
+        printf("Signaled to %d\n", c_pid);
+        sigsuspend(&mask2);
+        printf("Got signal from my son\nBye\n");
         wait(&stat);
-        printf("Return value: %d\n", stat);
-        printf("Status: %d\n", WEXITSTATUS(stat));
-        if(WIFSIGNALED(stat)){
-            printf("Signal: %d\n", WTERMSIG(stat));
-        }
         exit(0);
     }
-
-
 }
 
