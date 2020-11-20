@@ -35,7 +35,6 @@ int main(int argc, char * argv[], char * envp[]){
     while ((l=read(fd1, buff, 4096))>0)
         write(fd2, buff, l);
 
-
     close(fd1);
     close(fd2);
     exit(0);

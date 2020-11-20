@@ -16,6 +16,7 @@ int main(int argc, char * argv[], char * envp[]){
         printf("Usage: %s file1 file2 ....\n", argv[0]);
         exit(1);
     }
+
     for(i = 1; i < argc; i++){
         if((stat(argv[i], &st)) == 0){
             if(st.st_size > size){

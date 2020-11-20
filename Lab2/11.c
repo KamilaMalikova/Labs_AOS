@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <string.h>
 #include <sys/wait.h>
 #include <fcntl.h>
 
@@ -20,6 +21,13 @@ int main(int argc, char * argv[], char * envp[]){
     if(fork()){
         //parent
         int st;
+        char *tem = argv[2];
+        strcat(argv[1], " ");
+        printf(argv[1]);
+        printf(argv[2]);
+        strcat(argv[1], tem);
+        printf(argv[1]);
+        system(argv[1]);
         wait(&st);
 
     }else{

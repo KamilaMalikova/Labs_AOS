@@ -48,10 +48,11 @@ int main(int argc, char * argv[], char * envp[]){
     printf("Minor: %ud\n", minor(st.st_rdev));
 
     pswd = getpwuid(st.st_uid);
+    fd = open(argv[1]);
 
     printf("UID: %d - %s, ", st.st_uid, pswd->pw_name);
     printf("GID: %d - %s\n", st.st_gid, getpwuid(st.st_gid)->pw_name);
-
+    printf("Real size: %d", lseek(fd, 1, SEEK_END));
     printf("Device: %lud \n", st.st_dev);
     printf("Links: %lud \n", st.st_nlink);
     printf("Size=%ld bytes\n", st.st_size);

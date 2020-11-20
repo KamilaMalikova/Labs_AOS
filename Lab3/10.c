@@ -21,10 +21,7 @@ void print_sigset_t(sigset_t *set)
     int x = 0;
     for(int i = 1; i < 32; i++){
         if (sigismember(set, i)) printf("x = %d ", i);
-        //if (sigismember(set, 2)) printf("x = %d ", 2);
-        //if (sigismember(set, 12)) printf("x = %d ", 12);
     }
-//    printf("x = %d ", x);
 	printf("\n");
 }
 
@@ -44,7 +41,6 @@ int main(int argc, char * argv[], char * envp[]){
     sigset_t set;
 
     memset(&sa, 0, sizeof(sa));
-    //memset(&set, 0, sizeof(set));
     sa.sa_handler = disp;
     sigemptyset(&set);
     sigaddset(&set, SIGINT);
@@ -57,12 +53,12 @@ int main(int argc, char * argv[], char * envp[]){
 
     if((c_pid = fork()) == 0){
         for(int i = 0; i< 15; i++){
-            sleep(1);
             printf("Iteration: %d\n", i);
+            sleep(1);
         }
         exit(3);
     }else{
-        sleep(1);
+        sleep(2);
         printf("1\n");
         kill(c_pid, SIGINT);
         //sleep(1);
@@ -71,7 +67,6 @@ int main(int argc, char * argv[], char * envp[]){
         printf("3\n");
         kill(c_pid, SIGUSR1);
         kill(c_pid, SIGUSR2);
-
 
         wait(&stat);
         printf("Return value: %d\n", stat);

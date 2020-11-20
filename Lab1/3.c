@@ -25,7 +25,7 @@ int main(int argc, char * argv[], char * envp[]){
         fprintf(stderr, "%s: incorrect filemode\n", argv[2]);
         exit(1);
     }else{
-
+        umask(0000);
         //Создать новый файл
         file = open(argv[1], O_WRONLY | O_CREAT | O_TRUNC, p);
         if(file >=0){
