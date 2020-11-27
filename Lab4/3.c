@@ -10,16 +10,12 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 
-struct flock lock;
 
 int main(int argc, char * argv[], char * envp[]){
     int stat;
     int pipe1[2];
     int pipe2[2];
-    lock.l_type = F_UNLCK;
-    lock.l_whence = SEEK_SET;
-    lock.l_start = 0;
-    lock.l_len = 0;
+
     int data_processed;
 
     if(pipe(pipe1) == -1){
