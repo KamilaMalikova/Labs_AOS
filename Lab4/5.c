@@ -14,21 +14,19 @@ int main(int argc, char* argv[]) {
     int fd[2];
     pipe(fd);
 
-    if(fork() == 0){ // who process
-        char *argv[] = { "who", NULL };
+    if(fork()){ // who process
         dup2 (fd[1], 1);
-        close (fd[0]);
-        execvp (argv[0], argv);
+        close(fd[0]);
+        close(fd[1]);
+        execlp ("who", "who", NULL);
     }
     if(fork() == 0){ // wc process
-        char *argv[] = { "wc", "-l", NULL };
+        //char *argv[] = { "wc", "-l", NULL };
         dup2(fd[0], 0);
         close(fd[1]);
-        execvp(argv[0], argv);
+        close(fd[0]);
+        execlp("wc", "wc", "-l", NULL );
     }
-
-  close (fd[0]);
-  close (fd[1]);
 
   return 0;
 

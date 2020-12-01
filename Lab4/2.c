@@ -16,9 +16,8 @@
 int main(int argc, char * argv[], char * envp[]){
     int stat;
     int pipe1[2];
-
-
-    int data_processed;
+    int l;
+    char buff[50];
 
     if(pipe(pipe1) == -1){
         perror("Cannot create a pipe\n");
@@ -26,29 +25,18 @@ int main(int argc, char * argv[], char * envp[]){
     }
     //child
     if(fork() == 0){
-        //write to pipe1
         close(pipe1[0]);
-
-        char new_data[] = "123456";
-        printf("Sending new data: %s\n", new_data);
-        data_processed = write(pipe1[1], new_data, strlen(new_data));
-        printf("Wrote %d bytes\n", data_processed);
-        sleep(5);
+        while((l = read(0, buff, sizeof(buff))) > 0){
+            write(pipe1[1], buff, l);
+        }
         close(pipe1[1]);
         exit(0);
     } //parent
     else{
         // read from pipe1
         close(pipe1[1]);
-
-        fcntl(pipe1[0], F_SETFL, O_NONBLOCK);
-        char buff = '\0';
-        int l;
-        while((l = read(pipe1[0], &buff, sizeof(buff)))){
-            if(l == -1 && buff == '\0') continue;
-            if(l == -1 && buff != '\0') break;
-            write(1, &buff, sizeof(buff));
-
+        while((l = read(pipe1[0], buff, sizeof(buff))) != 0){
+            write(1, buff, l);
         }
         printf("\nPipe is empty\n");
         close(pipe1[0]);
