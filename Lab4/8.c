@@ -8,49 +8,53 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
+struct flock lock;
 
 int main (int argc, char ** argv) {
-    int fd, len;
-    char buf[10];
-    if(argc < 2 ){
-        printf("Usage: %s filename", argv[0]);
+
+    if(argc < 2){
+        printf("Usage %s filename", argv[0]);
         exit(1);
     }
 
-    if ( mkfifo(argv[1], 0777) ) {
-        perror("mkfifo");
-        exit(0);
-    }
-    printf("file is created\n");
+    lock.l_whence = SEEK_SET;
+    lock.l_start = 0;
+    lock.l_len = 0;
 
-    if(fork() == 0){//child
-        if ( (fd = open(argv[1], O_WRONLY|O_NDELAY)) <= 0 ) {
-            perror("open to write");
-            printf("Error %d\n", errno);
-            remove(argv[1]);
+    int fd;
+
+    if(fork()){ // parent
+        fd = open(argv[1], O_WRONLY | O_CREAT, 0700);
+        lock.l_type = F_WRLCK;
+        if(fcntl(fd, F_SETLKW, &lock) == -1){
+            perror("write lock");
             exit(errno);
         }
-        char new_data[] = "0123456789";
-        int data_len = write(fd, &new_data, strlen(new_data));
-        printf("\nWritten %d bytes\n", data_len);
-        close(fd);
-        exit(0);
-    }else{//parent
-        //sleep(1);
-        if ((fd = open(argv[1], O_RDONLY)) <= 0 ) {
-            perror("open to read");
-            remove(argv[1]);
-            exit(1);
+        int i = 0;
+        while(i < 1000){
+            char str[4];
+            sprintf(str, "%d", i);
+            write(fd, &str, sizeof(str));
+            i++;
         }
-        printf("read\n");
-        int data_len;
-        while((data_len = read(fd, &buf, sizeof(buf))) > 0){
-            write(1, &buf, sizeof(buf));
+
+        lock.l_type = F_UNLCK;
+        if(fcntl(fd, F_SETLKW, &lock) == -1){
+            perror("unlock");
+            exit(errno);
         }
-        close(fd);
-        remove(argv[1]);
-        printf("closed\n");
-        exit(0);
+    }else{ //child
+        fd = open(argv[1], O_RDONLY | O_CREAT, 0700);
+
+        int l;
+        char buf[20];
+        while((l = read(fd, buf, sizeof(buf))) > 0){
+            write(1, buf, l);
+        }
     }
+    exit(0);
 }
+

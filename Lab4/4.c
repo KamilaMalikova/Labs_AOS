@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
         dup2(fd[1],1); //standart output write to pipe
         close(fd[0]);
         close(fd[1]);
-        execlp("ps","-l",NULL); //run with STDOUT = pipe
+        execlp("ps","-l",NULL);
 }
  return 0;
 

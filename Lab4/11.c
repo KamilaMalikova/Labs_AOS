@@ -9,30 +9,41 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
-struct flock lock;
+
 
 int main (int argc, char ** argv) {
-    int fd[2];
-    char buf;
-    lock.l_type = F_WRLCK;
+    char * prefix;
+    int l;
+    char buf[10];
+    int fd;
 
-    if(fork() == 0){//child
-        close(fd[1]);
-        close(0);
-        fcntl(fd[0], F_SETLKW, lock);
-        while(read(fd[0], &buf, sizeof(buf))){
-            write(1, &buf, sizeof(buf));
-        }
-        exit(0);
-    }else{//parent
-        close(1);
-        close(fd[0]);
-        fcntl(fd[1], F_SETLKW, lock);
-        while(read(0, &buf, sizeof(buf))){
-            write(fd[1], &buf, sizeof(buf));
-            if(buf == '\n') break;
-        }
-        exit(0);
+    if((fd = open("file", O_RDWR|O_CREAT, 0700)) == -1){
+        perror("open");
+        exit(1);
     }
+    if(fork() == 0){//child
+        prefix = "Son:";
+    }else{//parent
+        prefix = "Father:";
+    }
+    struct flock lock;
+    lock.l_whence = SEEK_SET;
+    lock.l_start = 0;
+    lock.l_len = 0;
+    lock.l_type = F_WRLCK;
+    if(fcntl(fd, F_SETLKW, &lock) == -1){
+        perror("lock");
+        exit(1);
+    }
+    while((l = read(0, buf, sizeof(buf)-1)) > 0){
+        buf[l] = '\0';
+        printf("%s %s", prefix, buf);
+    }
+    lock.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &lock);
+    wait(NULL);
+    exit(0);
 }
