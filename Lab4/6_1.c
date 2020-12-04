@@ -18,7 +18,7 @@ int main (int argc, char ** argv) {
         printf("Usage: %s filename", argv[0]);
         exit(1);
     }
-    if ((fd = open(argv[1], O_WRONLY|O_NDELAY)) < 0 ) {
+    if ((fd = open(argv[1], O_WRONLY)) < 0 ) {
         perror("open");
         remove(argv[1]);
         exit(1);

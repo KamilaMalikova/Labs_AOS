@@ -24,7 +24,7 @@ int main (int argc, char ** argv) {
     }
     printf("file is created\n");
 
-    if ( (fd = open(argv[1], O_RDONLY|O_NDELAY)) < 0 ) {
+    if ( (fd = open(argv[1], O_RDONLY)) < 0 ) {
         perror("open");
         remove(argv[1]);
         exit(1);

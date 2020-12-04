@@ -18,7 +18,7 @@ int main(int argc, char * argv[], char * envp[]){
 
     int data_processed;
     char some_data[] = "123";
-    char buffer[BUFSIZ + 1];
+    char buffer[80];
     memset(buffer, 0, sizeof(buffer));
 
     if(pipe(pipe1) == -1){
@@ -36,7 +36,7 @@ int main(int argc, char * argv[], char * envp[]){
         //read from pipe2
         close(pipe2[1]);
 
-        data_processed = read(pipe2[0], buffer, BUFSIZ);
+        data_processed = read(pipe2[0], buffer, sizeof(buffer));
         printf("Read %d bytes: %s\n", data_processed, buffer);
         char new_data[] = "123456";
         printf("Sending new data: %s\n", new_data);
@@ -57,7 +57,7 @@ int main(int argc, char * argv[], char * envp[]){
         data_processed = write(pipe2[1], some_data, strlen(some_data));
         printf("Wrote %d bytes\n", data_processed);
 
-        data_processed = read(pipe1[0], buffer, BUFSIZ);
+        data_processed = read(pipe1[0], buffer, sizeof(buffer));
         printf("Read %d bytes: %s\n", data_processed, buffer);
 
         wait(&stat);
