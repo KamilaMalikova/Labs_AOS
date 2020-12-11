@@ -15,7 +15,7 @@
 
 struct messages{
     long type;
-    char text[2];
+    int text;
 };
 
 int main (int argc, char ** argv, char * envp[]) {
@@ -39,7 +39,7 @@ int main (int argc, char ** argv, char * envp[]) {
     }
     printf("%d\n", l);
     printf("Type: %ld\n", m1->type);
-    printf("'%*s'\n", l, m1->text);
+    printf("'%d'\n", m1->text);
     free(m1);
     exit(0);
 }

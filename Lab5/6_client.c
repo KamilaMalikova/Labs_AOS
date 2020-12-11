@@ -67,7 +67,7 @@ int main (int argc, char ** argv, char * envp[]) {
     printf("Client:\nType: %ld\n%s\n", m2->type, m2->text);
     //printf("'%*s'\n", l, m2->text);
     free(m2);
-    msgctl(msg_id, IPC_RMID, NULL);
+
     exit(0);
 }
 

@@ -12,6 +12,8 @@
 #include <unistd.h>
 #include <signal.h>
 
+#define MSG_EXCEPT 020000
+
 int msg_id;
 
 struct messages{
@@ -32,6 +34,7 @@ int main (int argc, char ** argv, char * envp[]) {
     struct messages *m1, *m2;
 
     signal(SIGINT, hangler);
+
     if((key = ftok(argv[0], 1)) == -1){
         perror("ftok");
         exit(1);
@@ -44,7 +47,7 @@ int main (int argc, char ** argv, char * envp[]) {
     printf("Msg_id: %d\n", msg_id);
     while(1){
        m1 = malloc(100);
-        if((l = msgrcv(msg_id, m1, 100, 0, 0)) == -1){
+        if((l = msgrcv(msg_id, m1, 100, 1, MSG_EXCEPT)) == -1){
             perror("msgrcv");
             exit(1);
         }
@@ -68,6 +71,7 @@ int main (int argc, char ** argv, char * envp[]) {
             exit(1);
         }
         free(m1);
+        free(m2);
     }
     exit(0);
 }
