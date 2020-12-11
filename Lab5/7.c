@@ -16,7 +16,6 @@
 #include <unistd.h>
 
 #define MSG_EXCEPT 020000
-#define MSG_EXCEPT 020000
 
 struct messages{
     long type;
@@ -46,16 +45,15 @@ int main (int argc, char ** argv, char * envp[]) {
             perror("msgrcv");
             exit(1);
         }
-        printf("Server:\nType: %ld\n%s\n", m1->type, m1->text);
-
-
-        char snum[10];
+        printf("%d:\nType: %ld\n%s\n", getpid(), m1->type, m1->text);
+        free(m1);
+        char snum[5];
         sprintf(snum, "%d", getpid());
         char *ms = malloc(strlen("Message from server to client ") + strlen(snum) + 1);
         strcpy(ms, "Message from server to client ");
         strcat(ms, snum);
 
-        m2 = malloc(strlen(ms)+5);
+        m2 = malloc(strlen(ms)+6);
         m2->type = getpid();
         strcpy(m2->text, ms);
 
@@ -63,7 +61,7 @@ int main (int argc, char ** argv, char * envp[]) {
             perror("msgsnd");
             exit(1);
         }
-        free(m1);
+        free(m2);
     }
     exit(0);
 }

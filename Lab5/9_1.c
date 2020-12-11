@@ -17,12 +17,12 @@ struct messages{
 
 int main (int argc, char ** argv, char * envp[]) {
     if(argc < 3){
-        printf("Usage %s file msg_id\n", argv[0]);
+        printf("Usage %s file msg_id msg_id\n", argv[0]);
         exit(1);
     }
     for(int i = 0; i < 5; i++){
         if(fork() == 0)
-            execl(argv[1], argv[1], argv[2], NULL);
+            execl(argv[1], argv[1], argv[2], argv[3], NULL);
     }
     exit(0);
 }
